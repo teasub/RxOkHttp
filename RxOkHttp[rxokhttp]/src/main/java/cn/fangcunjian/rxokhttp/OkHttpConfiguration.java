@@ -35,7 +35,7 @@ import okio.Buffer;
 /**
  * Create by Mcin on 16/02/22
  */
-public class RxOkHttpConfiguration {
+public class OkHttpConfiguration {
 
     private List<Part> commonParams;
     protected Headers commonHeaders;
@@ -54,7 +54,7 @@ public class RxOkHttpConfiguration {
     private List<Interceptor> networkInterceptorList;
     private List<Interceptor> interceptorList;
 
-    private RxOkHttpConfiguration(final Builder builder) {
+    private OkHttpConfiguration(final Builder builder) {
         this.commonParams = builder.commonParams;
         this.commonHeaders = builder.commonHeaders;
         this.certificateList = builder.certificateList;
@@ -243,8 +243,8 @@ public class RxOkHttpConfiguration {
             return this;
         }
 
-        public RxOkHttpConfiguration build() {
-            return new RxOkHttpConfiguration(this);
+        public OkHttpConfiguration build() {
+            return new OkHttpConfiguration(this);
         }
     }
 

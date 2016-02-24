@@ -25,7 +25,7 @@ import java.util.List;
 
 import cn.fangcunjian.rxokhttp.Part;
 import cn.fangcunjian.rxokhttp.RxOkHttp;
-import cn.fangcunjian.rxokhttp.RxOkHttpConfiguration;
+import cn.fangcunjian.rxokhttp.OkHttpConfiguration;
 import cn.fangcunjian.rxokhttp.sample.dagger.AppComponent;
 import cn.fangcunjian.rxokhttp.sample.dagger.DaggerAppComponent;
 import cn.finalteam.galleryfinal.CoreConfig;
@@ -64,7 +64,7 @@ public class AppContext extends Application {
         List<Part> commomParams = new ArrayList<>();
         Headers commonHeaders = new Headers.Builder().build();
 
-        RxOkHttpConfiguration.Builder builder = new RxOkHttpConfiguration.Builder()
+        OkHttpConfiguration.Builder builder = new OkHttpConfiguration.Builder()
                 .setCommenParams(commomParams)
                 .setCommenHeaders(commonHeaders)
                 .setTimeout(Constants.REQ_TIMEOUT)

@@ -37,6 +37,7 @@ import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Mcin on 15/12/18.
@@ -77,6 +78,9 @@ public class HttpTask<T> {
             headers = params.headers.build();
         }
     }
+
+
+
 
 
     /**
@@ -246,7 +250,8 @@ public class HttpTask<T> {
                     public Observable<BaseResponse> call(ResponseData responseData) {
                         return onPostExecute(responseData);
                     }
-                } );
+                } )
+                .subscribeOn( Schedulers.io());
     }
 
 
@@ -254,18 +259,5 @@ public class HttpTask<T> {
         return url;
     }
 
-    /**
-     * 取消请求
-     * @param url
-     */
-    public static void cancel(String url) {
-        if ( !StringUtils.isEmpty(url) ) {
-            Call call = OkHttpCallManager.getInstance().getCall(url);
-            if ( call != null ) {
-                call.cancel();
-            }
 
-            OkHttpCallManager.getInstance().removeCall(url);
-        }
-    }
 }

@@ -87,7 +87,6 @@ public class UploadActivity extends BaseActivity {
         String fileuploadUri = "http://uploader.paojiao.cn/avatarAppUploader?userId=" + userId;
 
         HttpRequest.post(fileuploadUri, params, new BaseResponse<UploadResponse>(){})
-                .subscribeOn( Schedulers.io())
                 .observeOn( AndroidSchedulers.mainThread())
                 .subscribe( new Observer<BaseResponse>() {
                     @Override

@@ -17,7 +17,6 @@ import cn.fangcunjian.rxokhttp.sample.http.model.GameInfo;
 import cn.fangcunjian.rxokhttp.sample.http.model.NewGameResponse;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 
 /**
@@ -35,7 +34,6 @@ public class NewGamePresenter extends MvpBasePresenter<NewGameView> {
         params.addFormDataPart("page", page);
         params.addFormDataPart("limit", 12);
         HttpRequest.get( Api.NEW_GAME, params, new BaseResponse<NewGameResponse>(){})
-                .subscribeOn( Schedulers.io())
                 .observeOn( AndroidSchedulers.mainThread())
                 .subscribe( new Subscriber<BaseResponse>() {
                     @Override

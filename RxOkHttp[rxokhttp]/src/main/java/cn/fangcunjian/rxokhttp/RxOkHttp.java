@@ -39,12 +39,12 @@ public class RxOkHttp {
     private OkHttpClient okHttpClient;
 
     private static RxOkHttp rxOkHttp;
-    private RxOkHttpConfiguration configuration;
+    private OkHttpConfiguration configuration;
 
     private RxOkHttp() {
     }
 
-    public synchronized void init(RxOkHttpConfiguration configuration) {
+    public synchronized void init(OkHttpConfiguration configuration) {
         this.configuration = configuration;
 
         long timeout = configuration.getTimeout();
