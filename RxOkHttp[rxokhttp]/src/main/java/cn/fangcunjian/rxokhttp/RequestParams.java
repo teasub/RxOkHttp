@@ -18,10 +18,11 @@ package cn.fangcunjian.rxokhttp;
 
 import android.text.TextUtils;
 
-import com.alibaba.fastjson.JSONObject;
-
 import net.fangcunjian.mosby.utils.StringUtils;
 import net.fangcunjian.mosby.utils.logger.ILogger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -274,15 +275,19 @@ public class RequestParams {
     protected RequestBody getRequestBody() {
         RequestBody body = null;
         if (applicationJson) {
-            String json;
+            String json = null;
             if (jsonParams == null) {
                 JSONObject jsonObject = new JSONObject();
                 for (Part part : params) {
-                    jsonObject.put(part.getKey(), part.getValue());
+                    try {
+                        jsonObject.put(part.getKey(), part.getValue());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-                json = jsonObject.toJSONString();
+                json = jsonObject.toString();
             } else {
-                json = jsonParams.toJSONString();
+                json = jsonParams.toString();
             }
             body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
         } else if (requestBody != null) {

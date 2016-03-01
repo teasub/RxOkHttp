@@ -16,9 +16,10 @@
 
 package cn.fangcunjian.rxokhttp;
 
+import net.fangcunjian.mosby.utils.StringUtils;
+
 import java.io.File;
 
-import cn.finalteam.toolsfinal.StringUtils;
 import okhttp3.Call;
 import rx.Observable;
 

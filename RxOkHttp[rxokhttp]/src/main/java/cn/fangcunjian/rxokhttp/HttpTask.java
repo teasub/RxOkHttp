@@ -18,10 +18,9 @@ package cn.fangcunjian.rxokhttp;
 
 import android.text.TextUtils;
 
-import com.alibaba.fastjson.JSON;
-
 import net.fangcunjian.mosby.utils.JsonFormatUtils;
 import net.fangcunjian.mosby.utils.StringUtils;
+import net.fangcunjian.mosby.utils.gson.GsonQuick;
 import net.fangcunjian.mosby.utils.logger.ILogger;
 
 import java.io.IOException;
@@ -203,7 +202,8 @@ public class HttpTask<T> {
                         }else {
                             Object obj = null;
                             try {
-                                obj = JSON.parseObject(result, date.type);
+//                                obj = JSON.parseObject(result, date.type);
+                                obj = GsonQuick.toObject(result, date.type);
                             } catch (Exception e) {
                                 ILogger.e(e);
                             }

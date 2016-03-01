@@ -24,7 +24,6 @@ import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.observables.ConnectableObservable;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import us.feras.mdv.MarkdownView;
 

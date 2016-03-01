@@ -25,7 +25,6 @@ import rx.android.schedulers.AndroidSchedulers;
 public class NewGamePresenter extends MvpBasePresenter<NewGameView> {
 
     private final static  String TAG = NewGamePresenter.class.getSimpleName();
-
     @Inject
     public NewGamePresenter(){}
 

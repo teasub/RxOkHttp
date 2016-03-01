@@ -16,6 +16,8 @@
 
 package cn.fangcunjian.rxokhttp;
 
+import net.fangcunjian.mosby.utils.StringUtils;
+
 import java.io.InputStream;
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -23,7 +25,6 @@ import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 
-import cn.finalteam.toolsfinal.StringUtils;
 import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.CertificatePinner;
