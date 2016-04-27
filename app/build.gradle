@@ -1,9 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'AndResGuard'
+
+def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
+}
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '23.0.3'
 
     defaultConfig {
         applicationId "cn.fangcunjian.rxokhttp.sample"
@@ -11,19 +16,96 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
+        // dex突破65535的限制
+        multiDexEnabled true
+        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "wordaily"]
     }
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+    signingConfigs {
+        debug {
         }
 
-        debug {
-            // 是否进行混淆
-//            minifyEnabled true
-//            debuggable true
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro';
+        release {
+            try {
+                storeFile file("wordaily_release.jks")
+                storePassword "zkjswordaily_2016"
+                keyAlias "wordaily"
+                keyPassword "2016zkjswordaily"
+            } catch (ex) {
+                throw new InvalidUserDataException(ex.toString())
+            }
+
         }
+    }
+
+    buildTypes {
+
+        debug {
+            // 显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            versionNameSuffix "-debug"
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.release
+        }
+
+        release {
+            // 不显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+
+            minifyEnabled true
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources true
+            proguardFiles 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        // 输出apk名称为wordaily_1.0_2016-01-15_wandoujia.apk
+                        def fileName = "wordaily_${defaultConfig.versionName}_${releaseTime()}_${variant.productFlavors[0].name}_" +
+                                "release.apk"
+                        output.outputFile = new File(outputFile.parent, fileName)
+                    }
+                }
+            }
+        }
+
+    }
+
+    // 友盟多渠道打包
+    productFlavors {
+        wordaily{}
+        /*
+        _91 {}
+        _360 {}
+        nduo {}
+        ppzhushou {}
+        anzhi {}
+        anzhuo {}
+        huawei {}
+        jifeng {}
+        meizhu {}
+        mumayi {}
+        shumafengbao {}
+        shougou {}
+        wandoujia {}
+        wangyi {}
+        yidongmm {}
+        other {}
+        yingyonghui {}
+        youyi {}
+        yingyongbao {}
+        */
+
+    }
+
+    productFlavors.all { flavor ->
+        flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
     }
 
     packagingOptions {
@@ -45,6 +127,29 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+}
+andResGuard {
+    mappingFile = null
+    use7zip = true
+    useSign = true
+    keepRoot = false
+    // add <yourpackagename>.R.drawable.icon into whitelist.
+    // because the launcher will get the icon with his name
+    whiteList = [
+
+    ]
+    compressFilePattern = [
+            "*.png",
+            "*.jpg",
+            "*.jpeg",
+            "*.gif",
+            "resources.arsc"
+    ]
+    //FIXME:change to your zipalign path
+    zipAlignPath = '/Users/churchull/Library/Android/sdk/build-tools/21.1.1/zipalign'
+
+    //FIXME:change to your 7za path
+    sevenZipPath = '/usr/local/bin/7za'
 }
 
 dependencies {

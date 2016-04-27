@@ -190,20 +190,18 @@ public class HttpTask<T> {
                         if (Configuration.DEBUG) {
                             ILogger.d("url=" + url + "\n result=" + JsonFormatUtils.formatJson(respBody));
                         }
-                        String result = responseData.getResponse();
 
-                        if (StringUtils.isEmpty(result)) {
+                        if (StringUtils.isEmpty(respBody)) {
                             return ;
                         }
 
                         if (date.type == String.class) {
                             date.setHeaders(responseData.getHeaders());
-                            date.setData(result);
+                            date.setData(respBody);
                         }else {
                             Object obj = null;
                             try {
-//                                obj = JSON.parseObject(result, date.type);
-                                obj = GsonQuick.toObject(result, date.type);
+                                obj = GsonQuick.toObject(respBody, date.type);
                             } catch (Exception e) {
                                 ILogger.e(e);
                             }

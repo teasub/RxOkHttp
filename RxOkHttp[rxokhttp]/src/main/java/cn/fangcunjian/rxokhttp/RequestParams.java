@@ -130,9 +130,9 @@ public class RequestParams {
      * @param file
      */
     public void addFormDataPart(String key, File file) {
-        if (file == null || !file.exists() || file.length() == 0) {
+        /*if (file == null || !file.exists() || file.length() == 0) {
             return;
-        }
+        }*/
 
         boolean isPng = file.getName().lastIndexOf("png") > 0 || file.getName().lastIndexOf("PNG") > 0;
         if (isPng) {
@@ -280,7 +280,7 @@ public class RequestParams {
                 JSONObject jsonObject = new JSONObject();
                 for (Part part : params) {
                     try {
-                        jsonObject.put(part.getKey(), part.getValue());
+                        jsonObject.put(part.getKey(), part.getValue() != null ? part.getValue() : "");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -298,7 +298,7 @@ public class RequestParams {
             builder.setType(MultipartBody.FORM);
             for (Part part:params){
                 String key = part.getKey();
-                String value = part.getValue();
+                String value = part.getValue() != null ? part.getValue() : "";
                 builder.addFormDataPart(key, value);
                 hasData = true;
             }
@@ -319,7 +319,7 @@ public class RequestParams {
             boolean hasData = false;
             for (Part part:params){
                 String key = part.getKey();
-                String value = part.getValue();
+                String value = part.getValue() != null ? part.getValue() : "";
                 builder.add(key, value);
                 hasData = true;
             }
