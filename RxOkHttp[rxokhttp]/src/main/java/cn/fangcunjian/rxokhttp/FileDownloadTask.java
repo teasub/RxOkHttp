@@ -101,8 +101,10 @@ public class FileDownloadTask {
                 totalTime += 1;
             }
             long networkSpeed = sum / totalTime;
-            subscriber.onNext(new ProgressEvent((long)progress, (int)networkSpeed, false));
-
+            subscriber.onNext(new ProgressEvent(networkSpeed, progress, false));
+            if (progress == 100){
+                subscriber.onCompleted();
+            }
         }
     }
 
@@ -130,7 +132,7 @@ public class FileDownloadTask {
                 onProgressUpdate(value, subscriber);
             }
             fos.flush();
-            subscriber.onCompleted();
+//            subscriber.onCompleted();
             return target.getAbsolutePath();
         } catch (Exception e){
             subscriber.onError(e);

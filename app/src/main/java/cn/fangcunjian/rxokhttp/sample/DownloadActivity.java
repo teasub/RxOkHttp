@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import net.fangcunjian.mosby.utils.logger.ILogger;
+
 import java.io.File;
 
 import butterknife.Bind;
@@ -30,6 +32,8 @@ import cn.fangcunjian.rxokhttp.HttpRequest;
 import cn.fangcunjian.rxokhttp.ProgressEvent;
 import cn.fangcunjian.rxokhttp.sample.base.view.BaseActivity;
 import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import us.feras.mdv.MarkdownView;
 
 /**
@@ -60,6 +64,8 @@ public class DownloadActivity extends BaseActivity {
     public void download() {
         String url = "http://219.128.78.33/apk.r1.market.hiapk.com/data/upload/2015/05_20/14/com.speedsoftware.rootexplorer_140220.apk";
         HttpRequest.download(url,new File("/sdcard/rootexplorer_140220.apk"))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe( new Observer<ProgressEvent>() {
                     @Override
                     public void onCompleted() {
@@ -74,7 +80,8 @@ public class DownloadActivity extends BaseActivity {
                     @Override
                     public void onNext(ProgressEvent progressEvent) {
                         if (null != progressEvent){
-                            mPbDownload.setProgress(progressEvent.getProgress());
+                            ILogger.d("下载进度：" + progressEvent.getProgress());
+                            mPbDownload.setProgress(progressEvent.getProgress() / 100);
                         }
 
                     }

@@ -30,6 +30,7 @@ public class ProgressEvent {
         this.done = done;
     }
 
+
     public long getNetworkSpeed() {
         return networkSpeed;
     }
