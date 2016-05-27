@@ -28,7 +28,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
@@ -83,8 +82,11 @@ public class FileDownloadTask {
                         previousTime = System.currentTimeMillis();
                     }
                 } )
+                .onBackpressureDrop()
                 .subscribeOn( Schedulers.io())
-                .observeOn( AndroidSchedulers.mainThread() );
+                .observeOn( Schedulers.computation());
+
+
     }
 
 
