@@ -19,9 +19,6 @@ package cn.fangcunjian.rxokhttp.sample;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import net.fangcunjian.mosby.utils.logger.ILogger;
 
 import java.io.File;
 
@@ -31,9 +28,8 @@ import butterknife.OnClick;
 import cn.fangcunjian.rxokhttp.HttpRequest;
 import cn.fangcunjian.rxokhttp.ProgressEvent;
 import cn.fangcunjian.rxokhttp.sample.base.view.BaseActivity;
+import cn.finalteam.galleryfinal.utils.ILogger;
 import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import us.feras.mdv.MarkdownView;
 
 /**
@@ -62,14 +58,14 @@ public class DownloadActivity extends BaseActivity {
 
     @OnClick(R.id.btn_download)
     public void download() {
-        String url = "http://219.128.78.33/apk.r1.market.hiapk.com/data/upload/2015/05_20/14/com.speedsoftware.rootexplorer_140220.apk";
+        String url = "http://www.91just.cn/upload/wordaily/apk/wordaily_1.1.036_20160519__360_release_signed_7zip_signed_Aligned.encrypted_signed_Aligned.apk";
         HttpRequest.download(url,new File("/sdcard/rootexplorer_140220.apk"))
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
+                .onBackpressureDrop()
                 .subscribe( new Observer<ProgressEvent>() {
                     @Override
                     public void onCompleted() {
-                        Toast.makeText(getBaseContext(), "下载成功", Toast.LENGTH_SHORT).show();
+                        ILogger.d("下载完成");
+//                        Toast.makeText(getBaseContext(), "下载成功", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

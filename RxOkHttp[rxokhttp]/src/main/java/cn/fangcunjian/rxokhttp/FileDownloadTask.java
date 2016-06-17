@@ -65,11 +65,7 @@ public class FileDownloadTask {
 
                 try {
                     Response response = okHttpClient.newCall( request ).execute();
-                    long total = response.body().contentLength();
                     saveFile( response, subscriber);
-                    if (total == target.length()) {
-
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     subscriber.onError( e );
@@ -97,14 +93,16 @@ public class FileDownloadTask {
             long total = values[1];
 
             int progress = (int) (sum * 100.0f / total);
+//            ILogger.d("进度=" + progress);
             //计算下载速度
             long totalTime = (System.currentTimeMillis() - previousTime) / 1000;
             if (totalTime == 0) {
                 totalTime += 1;
             }
             long networkSpeed = sum / totalTime;
-            subscriber.onNext(new ProgressEvent(networkSpeed, progress, false));
-            if (progress == 100){
+            if (progress < 100){
+                subscriber.onNext(new ProgressEvent(networkSpeed, progress, false));
+            }else {
                 subscriber.onCompleted();
             }
         }

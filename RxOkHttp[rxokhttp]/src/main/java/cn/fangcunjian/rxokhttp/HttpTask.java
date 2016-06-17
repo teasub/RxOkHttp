@@ -192,6 +192,8 @@ public class HttpTask<T> {
                         }
 
                         if (StringUtils.isEmpty(respBody)) {
+                            subscriber.onError(new Exception(BaseResponse.ERROR_RESPONSE_TIMEOUT
+                                    + "response is null"));
                             return ;
                         }
 
