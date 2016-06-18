@@ -189,10 +189,10 @@ public class HttpRequest {
      * @param target 保存的文件
      * @return
      */
-    public static Observable<ProgressEvent> download(String url, File target) {
+    public static FileDownloadTask download(String url, File target) {
         if (!StringUtils.isEmpty(url) && target != null) {
             FileDownloadTask task = new FileDownloadTask(url, target);
-            return task.fileDonwload();
+            return task;
         }
         return null;
     }

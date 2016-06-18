@@ -16,7 +16,9 @@
 
 package cn.fangcunjian.rxokhttp;
 
+import net.fangcunjian.mosby.utils.StringUtils;
 import net.fangcunjian.mosby.utils.io.FileUtils;
+import net.fangcunjian.mosby.utils.logger.ILogger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,8 +30,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Action0;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 /**
  * Create by Mcin on 16/2/22
@@ -42,11 +46,15 @@ public class FileDownloadTask {
     //开始下载时间，用户计算加载速度
     private long previousTime;
 
+    private PublishSubject<ProgressEvent> mDownloadProgress = PublishSubject.create();
+
     public FileDownloadTask(String url, File target) {
         this.url = url;
         this.okHttpClient = RxOkHttp.getInstance().getOkHttpClient();
         this.target = target;
 
+
+        ILogger.d("addres2= " + mDownloadProgress.toString());
         FileUtils.mkdirs( target.getParentFile() );
         if (target.exists()) {
             target.delete();
@@ -54,40 +62,48 @@ public class FileDownloadTask {
     }
 
 
-    protected Observable<ProgressEvent> fileDonwload() {
-        return Observable.create( new Observable.OnSubscribe<ProgressEvent>() {
+    public void fileDonwload() {
+        Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public void call(Subscriber<? super ProgressEvent> subscriber) {
+            public void call(Subscriber<? super String> subscriber) {
                 //构造请求
                 final Request request = new Request.Builder()
                         .url( url )
                         .build();
 
                 try {
+                    previousTime = System.currentTimeMillis();
                     Response response = okHttpClient.newCall( request ).execute();
-                    saveFile( response, subscriber);
+                    String result = saveFile( response);
+                    if (!StringUtils.isEmpty(result)){
+                        subscriber.onNext(result);
+                        subscriber.onCompleted();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     subscriber.onError( e );
                 }
             }
         } )
-                .doOnSubscribe( new Action0() {
-                    @Override
-                    public void call() {
-                        previousTime = System.currentTimeMillis();
-                    }
-                } )
                 .onBackpressureDrop()
                 .subscribeOn( Schedulers.io())
-                .observeOn( Schedulers.computation());
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        ILogger.d("下载完成= " + s);
+                    }
+                });
 
+    }
 
+    public PublishSubject<ProgressEvent> getmDownloadProgress(){
+        return this.mDownloadProgress;
     }
 
 
 
-    protected void onProgressUpdate(long[] values, Subscriber<? super ProgressEvent> subscriber) {
+    protected void onProgressUpdate(long[] values) {
         if (values != null && values.length >= 2) {
             long sum = values[0];
             long total = values[1];
@@ -100,19 +116,15 @@ public class FileDownloadTask {
                 totalTime += 1;
             }
             long networkSpeed = sum / totalTime;
-            if (progress < 100){
-                subscriber.onNext(new ProgressEvent(networkSpeed, progress, false));
-            }else {
-                subscriber.onCompleted();
-            }
+            mDownloadProgress.onNext(new ProgressEvent(networkSpeed, progress, false));
         }
     }
 
 
 
-    public String saveFile(Response response, Subscriber<? super ProgressEvent> subscriber) throws IOException {
+    private String saveFile(Response response) throws IOException {
         InputStream is = null;
-        byte[] buf = new byte[2048];
+        byte[] buf = new byte[4098];
         int len = 0;
         FileOutputStream fos = null;
         try {
@@ -129,26 +141,27 @@ public class FileDownloadTask {
                 fos.write( buf, 0, len );
                 value[0] = sum;
                 value[1] = total;
-                onProgressUpdate(value, subscriber);
+                onProgressUpdate(value);
             }
             fos.flush();
-//            subscriber.onCompleted();
+            mDownloadProgress.onCompleted();
             return target.getAbsolutePath();
         } catch (Exception e){
-            subscriber.onError(e);
+            mDownloadProgress.onError(e);
         }finally {
             try {
                 if (is != null) {
                     is.close();
                 }
             } catch (IOException e) {
+                mDownloadProgress.onError(e);
             }
             try {
                 if (fos != null) {
                     fos.close();
                 }
             } catch (IOException e) {
-                subscriber.onError(e);
+                mDownloadProgress.onError(e);
             }
         }
         return null;

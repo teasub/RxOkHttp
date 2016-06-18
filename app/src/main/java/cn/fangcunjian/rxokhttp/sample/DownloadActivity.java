@@ -19,17 +19,20 @@ package cn.fangcunjian.rxokhttp.sample;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.fangcunjian.rxokhttp.FileDownloadTask;
 import cn.fangcunjian.rxokhttp.HttpRequest;
 import cn.fangcunjian.rxokhttp.ProgressEvent;
 import cn.fangcunjian.rxokhttp.sample.base.view.BaseActivity;
 import cn.finalteam.galleryfinal.utils.ILogger;
 import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
 import us.feras.mdv.MarkdownView;
 
 /**
@@ -58,29 +61,38 @@ public class DownloadActivity extends BaseActivity {
 
     @OnClick(R.id.btn_download)
     public void download() {
+        mBtnDownload.setEnabled(false);
         String url = "http://www.91just.cn/upload/wordaily/apk/wordaily_1.1.036_20160519__360_release_signed_7zip_signed_Aligned.encrypted_signed_Aligned.apk";
-        HttpRequest.download(url,new File("/sdcard/rootexplorer_140220.apk"))
-                .onBackpressureDrop()
+        FileDownloadTask task = HttpRequest.download(url,new File("/sdcard/rootexplorer_140220.apk"));
+
+//        HttpRequest.download(url,new File("/sdcard/rootexplorer_140220.apk"))
+        task.getmDownloadProgress()
+                .distinct()
+                .onBackpressureBuffer()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe( new Observer<ProgressEvent>() {
                     @Override
                     public void onCompleted() {
                         ILogger.d("下载完成");
-//                        Toast.makeText(getBaseContext(), "下载成功", Toast.LENGTH_SHORT).show();
+                        mBtnDownload.setEnabled(true);
+                        Toast.makeText(getBaseContext(), "下载成功", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        ILogger.d("失败" + e.toString());
+                        mBtnDownload.setEnabled(true);
+                        Toast.makeText(getBaseContext(), "下载失败", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onNext(ProgressEvent progressEvent) {
-                        if (null != progressEvent){
-                            ILogger.d("下载进度：" + progressEvent.getProgress());
-                            mPbDownload.setProgress(progressEvent.getProgress() / 100);
-                        }
+                        ILogger.d("下载进度：" + progressEvent.getProgress() + "下载级难度=" + progressEvent.getNetworkSpeed());
+                        mPbDownload.setProgress(progressEvent.getProgress());
 
                     }
                 } );
+
+        task.fileDonwload();
     }
 }
