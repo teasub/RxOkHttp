@@ -26,7 +26,6 @@ import java.io.File;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.fangcunjian.rxokhttp.FileDownloadTask;
 import cn.fangcunjian.rxokhttp.HttpRequest;
 import cn.fangcunjian.rxokhttp.ProgressEvent;
 import cn.fangcunjian.rxokhttp.sample.base.view.BaseActivity;
@@ -63,10 +62,7 @@ public class DownloadActivity extends BaseActivity {
     public void download() {
         mBtnDownload.setEnabled(false);
         String url = "http://www.91just.cn/upload/wordaily/apk/wordaily_1.1.036_20160519__360_release_signed_7zip_signed_Aligned.encrypted_signed_Aligned.apk";
-        FileDownloadTask task = HttpRequest.download(url,new File("/sdcard/rootexplorer_140220.apk"));
-
-//        HttpRequest.download(url,new File("/sdcard/rootexplorer_140220.apk"))
-        task.getmDownloadProgress()
+        HttpRequest.download(url,new File("/sdcard/rootexplorer_140220.apk"))
                 .distinct()
                 .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -92,7 +88,5 @@ public class DownloadActivity extends BaseActivity {
 
                     }
                 } );
-
-        task.fileDonwload();
     }
 }

@@ -22,6 +22,7 @@ import java.io.File;
 
 import okhttp3.Call;
 import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * http请求类
@@ -189,10 +190,10 @@ public class HttpRequest {
      * @param target 保存的文件
      * @return
      */
-    public static FileDownloadTask download(String url, File target) {
+    public static PublishSubject<ProgressEvent> download(String url, File target) {
         if (!StringUtils.isEmpty(url) && target != null) {
             FileDownloadTask task = new FileDownloadTask(url, target);
-            return task;
+            return task.fileDonwload();
         }
         return null;
     }

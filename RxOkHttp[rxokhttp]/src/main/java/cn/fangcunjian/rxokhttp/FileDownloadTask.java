@@ -62,7 +62,7 @@ public class FileDownloadTask {
     }
 
 
-    public void fileDonwload() {
+    public PublishSubject<ProgressEvent> fileDonwload() {
         Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
@@ -91,17 +91,13 @@ public class FileDownloadTask {
                 .subscribe(new Action1<String>() {
                     @Override
                     public void call(String s) {
-                        ILogger.d("下载完成= " + s);
+                        ILogger.d("download commplete = " + s);
                     }
                 });
 
-    }
-
-    public PublishSubject<ProgressEvent> getmDownloadProgress(){
         return this.mDownloadProgress;
+
     }
-
-
 
     protected void onProgressUpdate(long[] values) {
         if (values != null && values.length >= 2) {
